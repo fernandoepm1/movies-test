@@ -33,7 +33,7 @@ ActiveRecord::Schema.define(version: 2022_05_01_133533) do
     t.string "title", null: false
     t.date "release_date", null: false
     t.integer "runtime", null: false
-    t.integer "parental_rating"
+    t.integer "parental_rating", default: 0
     t.text "plot"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

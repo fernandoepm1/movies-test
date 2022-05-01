@@ -4,7 +4,7 @@ class CreateMovies < ActiveRecord::Migration[6.1]
       t.string :title, null: false
       t.date :release_date, null: false
       t.integer :runtime, null: false
-      t.integer :parental_rating
+      t.integer :parental_rating, default: 0
       t.text :plot
 
       t.timestamps
