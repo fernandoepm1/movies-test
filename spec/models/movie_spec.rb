@@ -10,9 +10,13 @@ RSpec.describe Movie, type: :model do
     it { should validate_presence_of(:title) }
     it { should validate_presence_of(:release_date) }
     it { should validate_presence_of(:runtime) }
-    it { should validate_numericality_of(:runtime).only_integer
-                                                  .is_greater_than(0) }
+    it { should validate_numericality_of(:runtime).only_integer.is_greater_than(0) }
   end
 
-  it { should define_enum_for(:parental_rating).with(%i[g pg pg_13 r nc_17]) }
+  it do
+    should define_enum_for(:parental_rating).with(
+      %i[undefined general parental_guidance
+         parental_guidance_13 restricted adults_only]
+    )
+  end
 end

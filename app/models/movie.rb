@@ -6,7 +6,14 @@ class Movie < ApplicationRecord
   validates :runtime, numericality: { only_integer: true,
                                       greater_than: 0 }
 
-  enum parental_rating: %i[g pg pg_13 r nc_17]
+  enum parental_rating: {
+    undefined: 0,
+    general: 1,
+    parental_guidance: 2,
+    parental_guidance_13: 3,
+    restricted: 4,
+    adults_only: 5
+  }
 
   def update_rating
     update_column(:rating, ratings.average(:grade))
