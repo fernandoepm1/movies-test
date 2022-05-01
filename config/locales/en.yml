@@ -30,4 +30,11 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  activerecord:
+    attributes:
+      movie/parental_rating:
+        g: "General Audiences"
+        pg: "Parental Guidance Suggested"
+        pg_13: "Parents Strongly Cautioned"
+        r: "Restricted"
+        nc_17: "Adults Only"
