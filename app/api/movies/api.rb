@@ -12,7 +12,7 @@ module Movies
         Movie.all
       end
 
-      desc 'searches a movie using title'
+      desc 'Searches movies by title'
       params do
         optional :title, type: String, desc: 'search term'
       end
@@ -27,7 +27,7 @@ module Movies
         end
       end
 
-      desc 'Show information about a particular movie'
+      desc 'Shows information about a particular movie.'
       params do
         requires :id, type: String, desc: 'movie ID.'
       end
@@ -38,14 +38,14 @@ module Movies
         movie || (error! 'not found', :internal_server_error)
       end
 
-      desc 'Create a movie.'
+      desc 'Creates a movie.'
       params do
         requires :title, type: String, desc: 'Movie title.'
-        requires :release_date, type: Date, desc: 'Movie release date'
-        optional :runtime, type: String, desc: 'Movie runtime'
-        optional :genre, type: String, desc: 'Movie genre'
-        optional :parental_rating, type: String, desc: 'Movie'
-        optional :plot, type: String, desc: 'Movie'
+        requires :release_date, type: Date, desc: 'Movie release date.'
+        requires :runtime, type: String, desc: 'Movie runtime.'
+        optional :genre, type: String, desc: 'Movie genre.'
+        optional :parental_rating, type: String, desc: 'Movie parental rating.'
+        optional :plot, type: String, desc: 'Movie plot.'
       end
 
       post do
@@ -61,9 +61,9 @@ module Movies
         )
       end
 
-      desc 'Delete a movie.'
+      desc 'Deletes a movie.'
       params do
-        requires :id, type: String, desc: 'movie ID.'
+        requires :id, type: String, desc: 'Movie ID.'
       end
       delete ':id' do
         Movie.find(params[:id]).destroy
