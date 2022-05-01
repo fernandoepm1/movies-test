@@ -1,21 +1,15 @@
+# frozen_string_literal: true
+
 module Movies
   class API < Grape::API
     version 'v1', using: :path
-    prefix "api"
+    prefix 'api'
     format :json
 
     resource :movies do
       desc 'returns all movies'
       get do
-        movies = Movie.all
-
-        movies.each do |movie|
-          if movie.ratings.count == 0
-            movie.rating = 0
-          else
-            movie.rating = movie.ratings.map(&:grade).sum / movie.ratings.map(&:grade).count
-          end
-        end
+        Movie.all
       end
 
       desc 'searches a movie using title'
@@ -29,7 +23,7 @@ module Movies
         if movies.any?
           movies.first
         else
-          error! "nothing for this search", :internal_server_error
+          error! 'nothing for this search', :internal_server_error
         end
       end
 
@@ -41,16 +35,7 @@ module Movies
       get '/:id' do
         movie = Movie.find_by_id(params[:id])
 
-        if movie
-          if movie.ratings.count == 0
-            movie.rating = 0
-          else
-            movie.rating = movie.ratings.map(&:grade).sum / movie.ratings.map(&:grade).count
-          end
-          movie
-        else
-          error! "not found", :internal_server_error
-        end
+        movie || (error! 'not found', :internal_server_error)
       end
 
       desc 'Create a movie.'
@@ -64,14 +49,16 @@ module Movies
       end
 
       post do
-        Movie.create!({
-          title: params[:title],
-          release_date: params[:release_date],
-          runtime: params[:runtime],
-          genre: params[:genre],
-          parental_rating: params[:parental_rating],
-          plot: params[:plot]
-        })
+        Movie.create!(
+          {
+            title: params[:title],
+            release_date: params[:release_date],
+            runtime: params[:runtime],
+            genre: params[:genre],
+            parental_rating: params[:parental_rating],
+            plot: params[:plot]
+          }
+        )
       end
 
       desc 'Delete a movie.'
