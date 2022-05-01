@@ -4,4 +4,5 @@ class Movie < ApplicationRecord
   validates :runtime, numericality: { only_integer: true,
                                       greater_than: 0 }
 
+  enum parental_rating: %i[g pg pg_13 r nc_17]
 end
