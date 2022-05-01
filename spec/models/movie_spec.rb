@@ -1,7 +1,22 @@
 require 'rails_helper'
 
 RSpec.describe Movie, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  context 'associations' do
+    it { should have_and_belong_to_many(:genres) }
+    it { should have_many(:ratings) }
+  end
 
-  it { is_expected.to have_many :ratings }
+  context 'validations' do
+    it { should validate_presence_of(:title) }
+    it { should validate_presence_of(:release_date) }
+    it { should validate_presence_of(:runtime) }
+    it { should validate_numericality_of(:runtime).only_integer.is_greater_than(0) }
+  end
+
+  it do
+    should define_enum_for(:parental_rating).with(
+      %i[undefined general parental_guidance
+         parental_guidance_13 restricted adults_only]
+    )
+  end
 end

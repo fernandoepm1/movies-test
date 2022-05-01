@@ -10,26 +10,39 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_02_033845) do
+ActiveRecord::Schema.define(version: 2022_05_01_133533) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "genres", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "genres_movies", id: false, force: :cascade do |t|
+    t.bigint "movie_id", null: false
+    t.bigint "genre_id", null: false
+    t.index ["genre_id"], name: "index_genres_movies_on_genre_id"
+    t.index ["movie_id"], name: "index_genres_movies_on_movie_id"
+  end
+
   create_table "movies", force: :cascade do |t|
     t.string "title", null: false
     t.date "release_date", null: false
-    t.string "runtime"
-    t.string "genre"
-    t.string "parental_rating"
+    t.integer "runtime", null: false
+    t.integer "parental_rating", default: 0
     t.text "plot"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.float "rating"
+    t.float "rating", default: 0.0
   end
 
   create_table "ratings", force: :cascade do |t|
     t.bigint "movie_id", null: false
-    t.integer "grade"
+    t.integer "grade", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["movie_id"], name: "index_ratings_on_movie_id"

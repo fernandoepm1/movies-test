@@ -29,12 +29,13 @@ group :development do
 end
 
 group :test do
-  gem 'fuubar'
-  gem 'simplecov', require: false
-  gem 'webmock'
   gem 'capybara', '>= 3.26'
+  gem 'fuubar'
   gem 'selenium-webdriver'
+  gem 'shoulda-matchers', '~> 5.0'
+  gem 'simplecov', require: false
   gem 'webdrivers'
+  gem 'webmock'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
