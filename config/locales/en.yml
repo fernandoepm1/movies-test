@@ -33,8 +33,9 @@ en:
   activerecord:
     attributes:
       movie/parental_rating:
-        g: "General Audiences"
-        pg: "Parental Guidance Suggested"
-        pg_13: "Parents Strongly Cautioned"
-        r: "Restricted"
-        nc_17: "Adults Only"
+        undefined: "N/A"
+        general: "G"
+        parental_guidance: "PG"
+        parental_guidance_13: "PG-13"
+        restricted: "R"
+        adults_only: "NC-17"
