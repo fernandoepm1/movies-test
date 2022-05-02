@@ -92,7 +92,7 @@ RSpec.describe Movies::API do
   end
 
   describe 'POST /api/v1/movies' do
-    before(:each) do
+    subject(:post_request) do
       post '/api/v1/movies', params: params
     end
 
@@ -103,14 +103,18 @@ RSpec.describe Movies::API do
         end
 
         it 'should have http status 406' do
+          post_request
+
           expect(response).to have_http_status(:not_acceptable)
         end
 
         it 'should not create a new movie in the database' do
-          expect(Movie.count).to eq(0)
+          expect { post_request }.to change { Movie.count }.by(0)
         end
 
         it 'should return an error message' do
+          post_request
+
           expect(response.body).to include('error')
           expect(response.body).to include('title is missing')
         end
@@ -122,14 +126,18 @@ RSpec.describe Movies::API do
         end
 
         it 'should have http status 406' do
+          post_request
+
           expect(response).to have_http_status(:not_acceptable)
         end
 
         it 'should not create a new movie in the database' do
-          expect(Movie.count).to eq(0)
+          expect { post_request }.to change { Movie.count }.by(0)
         end
 
         it 'should return an error message' do
+          post_request
+
           expect(response.body).to include('error')
           expect(response.body).to include('release_date is missing')
         end
@@ -141,16 +149,48 @@ RSpec.describe Movies::API do
         end
 
         it 'should have http status 406' do
+          post_request
+
           expect(response).to have_http_status(:not_acceptable)
         end
 
         it 'should not create a new movie in the database' do
-          expect(Movie.count).to eq(0)
+          expect { post_request }.to change { Movie.count }.by(0)
         end
 
         it 'should return an error message' do
+          post_request
+
           expect(response.body).to include('error')
           expect(response.body).to include('runtime is missing')
+        end
+      end
+
+      context 'with an invalid parental_rating' do
+        let(:params) do
+          {
+            title: 'Blade Runner 2022',
+            release_date: '2022-12-31',
+            runtime: 109,
+            parental_rating: 'invalid'
+          }
+        end
+
+        it 'should have http status 500' do
+          post_request
+
+          expect(response).to have_http_status(:internal_server_error)
+        end
+
+        it 'should not create a new movie in the database' do
+          expect { post_request }.to change { Movie.count }.by(0)
+        end
+
+        it 'should return an error message' do
+          post_request
+
+          expect(response.body).to include('error')
+          expect(response.body).to include('not a valid parental_rating')
         end
       end
     end
@@ -159,21 +199,32 @@ RSpec.describe Movies::API do
       let(:params) do
         {
           title: 'Kill Bill Vol. 3',
-          release_date: Date.today.next_year(13),
+          release_date: Date.today.next_year(13).to_s,
           runtime: 123
         }
       end
 
       it 'should have http status 201' do
+        post_request
+
         expect(response).to have_http_status(:created)
       end
 
-      it 'should create a new movie in the database' do
-        expect(Movie.count).to eq(1)
+      it 'should create a new movie' do
+        expect { post_request }.to change { Movie.count }.by(1)
+      end
+
+      it 'should create the movie with the given params' do
+        post_request
+
         expect(Movie.last.title).to eq(params[:title])
+        expect(Movie.last.release_date).to eq(params[:release_date].to_date)
+        expect(Movie.last.runtime).to eq(params[:runtime])
       end
 
       it 'should return a movie with the given params' do
+        post_request
+
         expect(response.body).to include(params[:title])
         expect(response.body).to include(params[:release_date].to_s)
         expect(response.body).to include(params[:runtime].to_s)
@@ -182,7 +233,7 @@ RSpec.describe Movies::API do
   end
 
   describe 'DELETE /api/v1/movies' do
-    before(:each) do
+    subject(:delete_request) do
       delete "/api/v1/movies/#{movie_id}"
     end
 
@@ -190,10 +241,18 @@ RSpec.describe Movies::API do
       let(:movie_id) { 0 }
 
       it 'should have http status 404' do
+        delete_request
+
         expect(response).to have_http_status(:not_found)
       end
 
+      it 'should not delete any movies' do
+        expect { delete_request }.to change { Movie.count }.by(0)
+      end
+
       it 'should return an error message' do
+        delete_request
+
         expect(response.body).to include('error')
         expect(response.body).to include("Couldn't find Movie")
       end
@@ -204,14 +263,18 @@ RSpec.describe Movies::API do
       let(:movie_id) { movie.id }
 
       it 'should have http status 200' do
+        delete_request
+
         expect(response).to have_http_status(:ok)
       end
 
       it 'should remove the movie from the database' do
-        expect(Movie.count).to eq(0)
+        expect { delete_request }.to change { Movie.count }.by(-1)
       end
 
       it 'should return the deleted movie' do
+        delete_request
+
         expect(response.body).to include(movie.title)
       end
     end
