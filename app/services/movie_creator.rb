@@ -9,7 +9,7 @@ class MovieCreator < ApplicationService
     ActiveRecord::Base.transaction do
       find_or_create_genres if params[:genres].present?
       create_movie
-      add_genres_to_movie
+      add_genres_to_movie if genres.any?
 
       movie
     end
