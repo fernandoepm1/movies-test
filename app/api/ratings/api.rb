@@ -5,9 +5,12 @@ module Ratings
     version 'v1', using: :path
     prefix 'api'
     format :json
+    formatter :json, Grape::Formatter::ActiveModelSerializers
+
+    include ExceptionHandler
 
     resource :ratings do
-      desc 'add ratings to a movie'
+      desc 'Add a new rating to an existing movie.'
       params do
         requires :movie_id, type: String, desc: 'Movie ID.'
         requires :grade, type: Integer, desc: 'Movie grade.'
@@ -15,10 +18,8 @@ module Ratings
 
       post do
         Rating.create!(
-          {
-            movie_id: params[:movie_id],
-            grade: params[:grade]
-          }
+          movie_id: params[:movie_id],
+          grade: params[:grade]
         )
       end
     end

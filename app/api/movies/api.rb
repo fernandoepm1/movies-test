@@ -5,37 +5,40 @@ module Movies
     version 'v1', using: :path
     prefix 'api'
     format :json
+    formatter :json, Grape::Formatter::ActiveModelSerializers
+
+    include ExceptionHandler
 
     resource :movies do
-      desc 'returns all movies'
+      desc 'Returns a paginated list of movies.'
+      paginate per_page: 5, max_per_page: 10
       get do
-        Movie.all
+        paginate Movie.all
       end
 
-      desc 'Searches movies by title'
+      desc 'Searches movies by title.'
       params do
-        optional :title, type: String, desc: 'search term'
+        optional :title, type: String, desc: 'Search term.'
       end
 
+      paginate per_page: 5, max_per_page: 10
       get '/search' do
         movies = Movie.where("title ILIKE '%#{params[:title]}%'")
 
         if movies.any?
-          movies.first
+          paginate movies
         else
-          error! 'nothing for this search', :internal_server_error
+          error! 'No movies found for this search', :internal_server_error
         end
       end
 
       desc 'Shows information about a particular movie.'
       params do
-        requires :id, type: String, desc: 'movie ID.'
+        requires :id, type: String, desc: 'Movie ID.'
       end
 
       get '/:id' do
-        movie = Movie.find_by_id(params[:id])
-
-        movie || (error! 'not found', :internal_server_error)
+        Movie.find(params[:id])
       end
 
       desc 'Creates a movie.'
@@ -43,28 +46,20 @@ module Movies
         requires :title, type: String, desc: 'Movie title.'
         requires :release_date, type: Date, desc: 'Movie release date.'
         requires :runtime, type: String, desc: 'Movie runtime.'
-        optional :genre, type: String, desc: 'Movie genre.'
+        optional :genres, type: String, desc: 'Movie genres.'
         optional :parental_rating, type: String, desc: 'Movie parental rating.'
         optional :plot, type: String, desc: 'Movie plot.'
       end
 
       post do
-        Movie.create!(
-          {
-            title: params[:title],
-            release_date: params[:release_date],
-            runtime: params[:runtime],
-            genre: params[:genre],
-            parental_rating: params[:parental_rating],
-            plot: params[:plot]
-          }
-        )
+        MovieCreator.call(params)
       end
 
       desc 'Deletes a movie.'
       params do
         requires :id, type: String, desc: 'Movie ID.'
       end
+
       delete ':id' do
         Movie.find(params[:id]).destroy
       end
